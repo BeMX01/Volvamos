@@ -1,3 +1,16 @@
+
+// Música: se inicia con el primer toque en "entrar" para cumplir las
+// restricciones de reproducción automática de los navegadores móviles.
+const musica = document.getElementById("musica");
+if (musica) {
+  musica.volume = 0.35;
+  musica.loop = true;
+}
+function iniciarMusica() {
+  if (!musica) return;
+  musica.play().catch(() => {});
+}
+
 const screens=[...document.querySelectorAll(".screen")];
 const bar=document.getElementById("progressBar");
 let current=0,locked=false;
@@ -11,7 +24,10 @@ function go(n){
  bar.style.width=((n+1)/screens.length*100)+"%";
  setTimeout(()=>locked=false,900);
 }
-document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.next)));
+document.querySelectorAll("[data-next]").forEach((b,i)=>b.addEventListener("click",()=>{
+ if(i===0) iniciarMusica();
+ go(+b.dataset.next);
+}));
 
 const maybe=document.getElementById("maybe");
 const msg=document.getElementById("maybeMsg");
