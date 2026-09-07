@@ -1,3 +1,25 @@
+// URL de tu Cloudflare Worker. NO pongas aquí el token de Telegram.
+const TELEGRAM_ENDPOINT = "";
+
+async function avisarTelegram(choice) {
+  if (!TELEGRAM_ENDPOINT) return;
+  try {
+    await fetch(TELEGRAM_ENDPOINT, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({choice})
+    });
+  } catch (_) {}
+}
+
+document.addEventListener("click", (event) => {
+  const b = event.target.closest("button, a");
+  if (!b) return;
+  const t = (b.textContent || "").toLowerCase();
+  if (t.includes("sí, volvamos") || t.includes("si, volvamos")) avisarTelegram("si");
+  if (t.includes("déjame pensarlo") || t.includes("dejame pensarlo")) avisarTelegram("pensarlo");
+});
+
 
 // Música: se inicia con el primer toque en "entrar" para cumplir las
 // restricciones de reproducción automática de los navegadores móviles.
