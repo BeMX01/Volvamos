@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#05030d">
+  <title>Volvamos a elegirnos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="vignette"></div>
+
+  <main id="experience">
+    <section class="screen active" id="s1">
+      <div class="content intro">
+        <div class="eyebrow">PARA TI</div>
+        <h1>Te voy a decir<br><span>y mostrar</span> algo.</h1>
+        <p>De la única manera que sé hacerlo.</p>
+        <button class="enter" data-next="s2">entrar <span>✦</span></button>
+      </div>
+    </section>
+
+    <section class="screen" id="s2">
+      <div class="content">
+        <div class="moon"></div>
+        <div class="eyebrow">SI PUDIERA VOLVER</div>
+        <h2>Volvería a elegirte.</h2>
+        <p>Porque entre todos los caminos que pude tomar,<br>el que me llevó hasta ti sigue siendo mi favorito.</p>
+        <button class="ghost" data-next="s3">seguir <span>→</span></button>
+      </div>
+    </section>
+
+    <section class="screen" id="s3">
+      <div class="content">
+        <div class="orbit"><span></span></div>
+        <div class="eyebrow">HE PENSADO EN NOSOTROS</div>
+        <h2>En lo bonito.<br>En lo difícil.<br>En todo.</h2>
+        <p>Y entendí que no extraño solamente lo que fuimos.<br>Extraño lo que todavía podemos ser.</p>
+        <button class="ghost" data-next="s4">seguir <span>→</span></button>
+      </div>
+    </section>
+
+    <section class="screen" id="s4">
+      <div class="content final-prep">
+        <div class="eyebrow">Y ENTONCES LO ENTENDÍ</div>
+        <h2>No quiero otra historia.</h2>
+        <p class="line">No quiero reemplazar la nuestra.</p>
+        <p class="line">Quiero continuarla.</p>
+        <button class="reveal" id="reveal">espera... <span>✦</span></button>
+      </div>
+    </section>
+
+    <section class="screen finale" id="s5">
+      <div id="burst"></div>
+      <div class="content final-content">
+        <div class="eyebrow">MI RESPUESTA</div>
+        <h1>VOLVAMOS<br><span>A ELEGIRNOS.</span></h1>
+        <p>Pero no para volver a donde estábamos...</p>
+        <p>Para construir algo donde ninguno<br>de los dos quiera volver a irse.</p>
+
+        <div class="promise">
+          <span>Quédate conmigo.</span>
+          <span>Hoy.</span>
+          <span>Mañana.</span>
+          <span>Y todos los días que nos queden. ❤️</span>
+        </div>
+
+        <div class="question">
+          <strong>¿Volvemos a escribir nuestra historia?</strong>
+          <div class="actions">
+            <button id="yes">Sí, volvamos ❤️</button>
+            <button id="maybe">Déjame pensarlo</button>
+          </div>
+          <p id="maybeMsg"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="progress"><span id="progressBar"></span></div>
+  <script src="script.js"></script>
+</body>
+</html>
