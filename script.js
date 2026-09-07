@@ -1,149 +1,87 @@
-const screens = [...document.querySelectorAll(".screen")];
-const progress = document.getElementById("progressBar");
-let current = 0;
-let locked = false;
+const screens=[...document.querySelectorAll(".screen")];
+const bar=document.getElementById("progressBar");
+let current=0,locked=false;
 
-function goTo(id) {
-  if (locked) return;
-  const next = document.getElementById(id);
-  if (!next) return;
-  const index = screens.indexOf(next);
-  if (index < 0 || index <= current) return;
+function go(n){
+ if(locked||n<=current||n>=screens.length)return;
+ locked=true;
+ screens[current].classList.remove("active");
+ screens[n].classList.add("active");
+ current=n;
+ bar.style.width=((n+1)/screens.length*100)+"%";
+ setTimeout(()=>locked=false,900);
+}
+document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.next)));
 
-  locked = true;
-  screens[current].classList.remove("active");
-  next.classList.add("active");
-  current = index;
-  progress.style.width = `${((current + 1) / screens.length) * 100}%`;
+const maybe=document.getElementById("maybe");
+const msg=document.getElementById("maybeMsg");
+let tries=0;
 
-  setTimeout(() => locked = false, 1100);
+function escapeButton(){
+ if(current!==5)return;
+ tries++;
+ const texts=[
+  "¿Pensarlo? Está bien... pero primero intenta alcanzarme. 😌❤️",
+  "Casi... pero todavía no me rindo. ✨",
+  "Creo que ese botón tiene otros planes... 👀",
+  "Puedes pensarlo, pero yo seguiré eligiéndote. ❤️",
+  "Bueno... oficialmente ese botón ya no quiere que lo pulses. 😂❤️"
+ ];
+ msg.textContent=texts[Math.min(tries-1,texts.length-1)];
+ maybe.classList.add("running");
+ const pad=18;
+ const maxX=Math.max(pad,innerWidth-maybe.offsetWidth-pad);
+ const maxY=Math.max(90,innerHeight-maybe.offsetHeight-55);
+ maybe.style.left=(pad+Math.random()*(maxX-pad))+"px";
+ maybe.style.top=(70+Math.random()*Math.max(1,maxY-70))+"px";
+ maybe.style.transform="rotate("+(Math.random()*12-6)+"deg)";
+}
+maybe.addEventListener("mouseenter",escapeButton);
+maybe.addEventListener("touchstart",e=>{e.preventDefault();escapeButton()},{passive:false});
+maybe.addEventListener("click",e=>{e.preventDefault();escapeButton()});
+
+document.getElementById("yes").addEventListener("click",()=>{
+ createBurst(110);
+ document.querySelector(".question strong").textContent="Entonces... volvamos a elegirnos. ❤️";
+ document.querySelector(".actions").style.display="none";
+ msg.textContent="Esta vez, juntos.";
+});
+
+function createBurst(count){
+ const box=document.getElementById("burst");
+ box.innerHTML="";
+ for(let i=0;i<count;i++){
+  const p=document.createElement("i");
+  p.className="particle";
+  const a=Math.random()*Math.PI*2;
+  const d=100+Math.random()*Math.max(innerWidth,innerHeight)*.85;
+  p.style.setProperty("--x",Math.cos(a)*d+"px");
+  p.style.setProperty("--y",Math.sin(a)*d+"px");
+  p.style.animationDelay=Math.random()*.2+"s";
+  box.appendChild(p);
+ }
 }
 
-document.querySelectorAll("[data-next]").forEach(btn => {
-  btn.addEventListener("click", () => goTo(btn.dataset.next));
-});
-
-document.getElementById("reveal").addEventListener("click", () => {
-  createBurst();
-  setTimeout(() => goTo("s5"), 650);
-});
-
-const maybe = document.getElementById("maybe");
-const maybeMsg = document.getElementById("maybeMsg");
-let maybeCount = 0;
-
-maybe.addEventListener("click", () => {
-  maybeCount++;
-  const messages = [
-    "Está bien... no tienes que responder ahora. ❤️",
-    "Tómate tu tiempo. Yo solo quería que supieras lo que siento.",
-    "Aunque sea un poquito... ¿me dejas intentarlo otra vez?",
-    "No voy a presionarte. Solo quería volver a elegirte."
-  ];
-  maybeMsg.textContent = messages[Math.min(maybeCount - 1, messages.length - 1)];
-
-  if (maybeCount >= 3) {
-    maybe.style.transform = `translateX(${Math.sin(maybeCount) * 7}px)`;
-  }
-});
-
-document.getElementById("yes").addEventListener("click", () => {
-  createBurst(95);
-  document.querySelector(".question strong").textContent = "Entonces... volvamos a elegirnos. ❤️";
-  document.querySelector(".actions").style.display = "none";
-  maybeMsg.textContent = "Esta vez, juntos.";
-});
-
-function createBurst(count = 140) {
-  const burst = document.getElementById("burst");
-  burst.innerHTML = "";
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement("i");
-    p.className = "particle";
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 90 + Math.random() * Math.max(innerWidth, innerHeight) * .75;
-    p.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
-    p.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
-    p.style.animationDelay = `${Math.random() * .22}s`;
-    const size = 1 + Math.random() * 4;
-    p.style.width = `${size}px`;
-    p.style.height = `${size}px`;
-    burst.appendChild(p);
-  }
+const canvas=document.getElementById("stars"),ctx=canvas.getContext("2d");
+let w,h,stars=[];
+function resize(){
+ w=innerWidth;h=innerHeight;
+ const d=Math.min(devicePixelRatio||1,2);
+ canvas.width=w*d;canvas.height=h*d;canvas.style.width=w+"px";canvas.style.height=h+"px";
+ ctx.setTransform(d,0,0,d,0,0);
+ stars=Array.from({length:Math.min(155,Math.floor(w*h/6400))},()=>({
+  x:Math.random()*w,y:Math.random()*h,r:.15+Math.random()*1.15,
+  a:.18+Math.random()*.7,p:Math.random()*6.28
+ }));
 }
-
-// Starfield optimized for mobile.
-const canvas = document.getElementById("stars");
-const ctx = canvas.getContext("2d", { alpha: true });
-let stars = [];
-let w, h, dpr;
-
-function resize() {
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  w = innerWidth;
-  h = innerHeight;
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  canvas.style.width = w + "px";
-  canvas.style.height = h + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  const amount = Math.min(150, Math.floor((w * h) / 6500));
-  stars = Array.from({length: amount}, () => ({
-    x: Math.random() * w,
-    y: Math.random() * h,
-    r: Math.random() * 1.25 + .15,
-    a: Math.random() * .75 + .15,
-    tw: Math.random() * .018 + .006,
-    phase: Math.random() * Math.PI * 2,
-    drift: (Math.random() - .5) * .08
-  }));
-}
-window.addEventListener("resize", resize);
-resize();
-
-let t = 0;
-function animate() {
-  t++;
-  ctx.clearRect(0, 0, w, h);
-
-  for (const s of stars) {
-    s.phase += s.tw;
-    s.x += s.drift;
-    if (s.x < -5) s.x = w + 5;
-    if (s.x > w + 5) s.x = -5;
-
-    const alpha = Math.max(.05, s.a + Math.sin(s.phase) * .22);
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(245,225,255,${alpha})`;
-    ctx.fill();
-
-    if (s.r > 1.05 && Math.sin(s.phase) > .8) {
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r * 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,180,225,${alpha * .08})`;
-      ctx.fill();
-    }
-  }
-  requestAnimationFrame(animate);
+resize();addEventListener("resize",resize);
+function animate(){
+ ctx.clearRect(0,0,w,h);
+ stars.forEach(s=>{
+  s.p+=.01;
+  ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+  ctx.fillStyle=`rgba(245,225,255,${Math.max(.03,s.a+Math.sin(s.p)*.18)})`;ctx.fill();
+ });
+ requestAnimationFrame(animate);
 }
 animate();
-
-// Swipe navigation for phones.
-let touchStartX = 0, touchStartY = 0;
-document.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].clientX;
-  touchStartY = e.changedTouches[0].clientY;
-}, {passive: true});
-
-document.addEventListener("touchend", e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)) {
-    if (dx < 0 && current < screens.length - 1) {
-      const target = screens[current + 1].id;
-      if (target !== "s5") goTo(target);
-    }
-  }
-}, {passive: true});
