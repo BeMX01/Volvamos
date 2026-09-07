@@ -1,5 +1,5 @@
 // URL de tu Cloudflare Worker. NO pongas aquí el token de Telegram.
-const TELEGRAM_ENDPOINT = "";
+const TELEGRAM_ENDPOINT = "https://volvamos-telegram.maxbey6.workers.dev";
 
 async function avisarTelegram(choice) {
   if (!TELEGRAM_ENDPOINT) return;
